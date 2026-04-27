@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String     @id @default(cuid())
+  name      String
+  email     String     @unique
+  password  String
+  role      Role
+  phone     String?
+  createdAt DateTime   @default(now())
+  hotels    Hotels[]
+  booking   Bookings[]
+}
+
+model Hotels {
+  id           String     @id @default(cuid())
+  ownerId      String
+  owner        User       @relation(fields: [ownerId], references: [id])
+  name         String
+  description  String     @db.Text
+  city         String
+  country      String
+  amenities    Json       @default("[]")
+  rating       Decimal    @default(0.0) @db.Decimal(2, 1)
+  totalReviews Int        @default(0)
+  createdAt    DateTime   @default(now())
+  rooms        Room[]
+  booking      Bookings[]
+}
+
+model Room {
+  id            String     @id @default(cuid())
+  hotelId       String
+  hotel         Hotels     @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  roomNumber    Int
+  RoomType      String
+  pricePerNight Decimal    @db.Decimal(10, 2)
+  maxOccupancy  Int
+  createdAt     DateTime   @default(now())
+  booking       Bookings[]
+
+  @@unique([hotelId, roomNumber])
+}
+
+model Bookings {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id])
+  roomId       String
+  room         Room     @relation(fields: [roomId], references: [id])
+  hotelId      String
+  hotel        Hotels   @relation(fields: [hotelId], references: [id])
+  checkInDate  DateTime @db.Date
+  checkOutDate DateTime @db.Date
+  guests       Int
+  totalPrice   Decimal  @db.Decimal(10, 2)
+  status       Status @default(CONFIRMED)
+  bookingDate  DateTime @default(now())
+  cancelledAt  DateTime?
+}
+
+enum Role {
+  CUSTOMER
+  OWNER
+}
+
+enum Status {
+  CONFIRMED
+  CANCELLED
+}
