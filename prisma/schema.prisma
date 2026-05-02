@@ -45,8 +45,8 @@ model Room {
   hotelId       String
   hotel         Hotels     @relation(fields: [hotelId], references: [id], onDelete: Cascade)
   roomNumber    Int
-  RoomType      String
-  pricePerNight Decimal    @db.Decimal(10, 2)
+  roomType      String
+  pricePerNight Int
   maxOccupancy  Int
   createdAt     DateTime   @default(now())
   booking       Bookings[]
@@ -55,19 +55,19 @@ model Room {
 }
 
 model Bookings {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   userId       String
-  user         User     @relation(fields: [userId], references: [id])
+  user         User      @relation(fields: [userId], references: [id])
   roomId       String
-  room         Room     @relation(fields: [roomId], references: [id])
+  room         Room      @relation(fields: [roomId], references: [id])
   hotelId      String
-  hotel        Hotels   @relation(fields: [hotelId], references: [id])
-  checkInDate  DateTime @db.Date
-  checkOutDate DateTime @db.Date
+  hotel        Hotels    @relation(fields: [hotelId], references: [id])
+  checkInDate  DateTime  @db.Date
+  checkOutDate DateTime  @db.Date
   guests       Int
-  totalPrice   Decimal  @db.Decimal(10, 2)
-  status       Status @default(CONFIRMED)
-  bookingDate  DateTime @default(now())
+  totalPrice   Decimal   @db.Decimal(10, 2)
+  status       Status    @default(CONFIRMED)
+  bookingDate  DateTime  @default(now())
   cancelledAt  DateTime?
 }
 
