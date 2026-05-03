@@ -22,6 +22,7 @@ model User {
   createdAt DateTime   @default(now())
   hotels    Hotels[]
   booking   Bookings[]
+  reviews   Review[]
 }
 
 model Hotels {
@@ -38,6 +39,7 @@ model Hotels {
   createdAt    DateTime   @default(now())
   rooms        Room[]
   booking      Bookings[]
+  review       Review[]
 }
 
 model Room {
@@ -69,6 +71,23 @@ model Bookings {
   status       Status    @default(CONFIRMED)
   bookingDate  DateTime  @default(now())
   cancelledAt  DateTime?
+  review       Review?
+}
+
+model Review {
+  id        String @id @default(cuid())
+  userId    String
+  hotelId   String
+  bookingId String @unique
+
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  hotel     Hotels   @relation(fields: [hotelId], references: [id])
+  booking   Bookings @relation(fields: [bookingId], references: [id])
+
+  @@unique([userId, bookingId])
 }
 
 enum Role {

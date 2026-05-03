@@ -6,3 +6,5 @@ export const createBookingSchema = z.object({
   checkOutDate: z.iso.date(),
   guests: z.number().int().positive(),
 });
+
+export const bookingQuerySchema = z.enum(["CONFIRMED", "CANCELLED"]).optional();
